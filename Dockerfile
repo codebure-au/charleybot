@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-RUN yarn install
+RUN npm install
 
 RUN apk --update add imagemagick && \
   rm -rf /var/cache/apk/*
