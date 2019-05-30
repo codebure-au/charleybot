@@ -85,7 +85,7 @@ const generateImage = (input: string) => {
     try {
       let text = input.replace('"', '\\"');
 
-      let splitStr = text.toLowerCase().split(' ');
+      let splitStr = text.split(' ');
       splitStr = splitStr.map((word, index) => {
         const exp = /^.*\.$/
         if(index > 0 && !exp.test(splitStr[index-1])) {
