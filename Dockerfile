@@ -2,13 +2,18 @@ FROM node:alpine
 
 WORKDIR /usr/src/app
 
+RUN apk --update add imagemagick && rm -rf /var/cache/apk/*
+
+COPY ./package.json .
+
+COPY ./yarn.lock .
+
+RUN yarn install
+
 COPY . .
 
-RUN npm install
-
-RUN apk --update add imagemagick && \
-  rm -rf /var/cache/apk/*
+RUN yarn prepare
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["yarn", "start"]
