@@ -87,7 +87,8 @@ const generateImage = (input: string) => {
 
       let splitStr = text.toLowerCase().split(' ');
       splitStr = splitStr.map((word, index) => {
-        if(index > 0) {
+        const exp = /^.*\.$/
+        if(index > 0 && !exp.test(splitStr[index-1])) {
           if(bannedWords.includes(word)) return word;
         }
 
