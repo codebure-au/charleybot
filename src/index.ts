@@ -84,6 +84,7 @@ const generateImage = (input: string) => {
   return new Promise((resolve, reject) => {
     try {
       let text = input.replace('"', '\\"');
+      text = input.replace('$', '\\$');
 
       let splitStr = text.split(' ');
       splitStr = splitStr.map((word, index) => {
