@@ -17,10 +17,6 @@ const bot = new Discord.Client({
 
 setInterval(() => {
   bot.disconnect();
-
-  setTimeout(() => {
-    bot.connect();
-  }, 5000)
 }, 1000 * 60 * 60 * 12)
 
 bot.on('disconnect', () => {
