@@ -10,56 +10,78 @@ const bannedWords = [
   'at', 'around', 'by', 'after', 'along', 'for', 'from', 'of', 'on', 'to', 'with', 'without'
 ]
 
-const bot = new Discord.Client({
+const discordOptions = {
   token: "NTgzNTc2NjExMDc3NzUwODA1.XO-YjQ.uNnl1zEaS5VUFfd-Q6g_NnPkj7c",
   autorun: true
-})
+}
+
+const getClient = () => {
+  const bot = new Discord.Client(discordOptions)
+
+  bot.on('connect', () => {
+    console.log(new Date().toISOString(), '- connect event received');
+  })
+
+  bot.on('disconnect', () => {
+    console.log(new Date().toISOString(), '- disconnect event received');
+  
+    setTimeout(() => {
+      bot.connect();
+    }, 5000)
+  })
+  
+  bot.on('ready', () => {
+    console.log('Logged in as %s - %s\n', bot.username, bot.id);
+  });
+  
+  bot.on('message', async (user, userID, channelID, message, event) => {
+    const exp = /^\!sunny (.*)$/
+  
+    if(exp.test(message)){
+      const match = exp.exec(message);
+      if(!match) return
+  
+      try {
+        const text = match[1];
+        const fileName = await generateImage(text);
+        console.log('file %s generated with text %s', fileName, text)
+  
+        bot.uploadFile({
+          file: `${root}/${fileName}`,
+          to: channelID
+        }, () => {
+          child_process.exec(`rm -f ./${fileName}`, (error, stdout, stderr) => {
+            console.log(error ? "file not deleted" : "file deleted");
+          })
+        })
+      } catch (e) {
+        console.log(e)
+        bot.sendMessage({
+          to: channelID,
+          message: "shits fucked"
+        })
+      }
+    }
+  });
+
+  return bot;
+}
+
+let bot: Discord.Client | undefined;
+
+bot = getClient();
 
 setInterval(() => {
-  bot.disconnect();
-}, 1000 * 60 * 60 * 12)
+  console.log(new Date().toISOString(), '- discarding bot')
+  if(bot) bot.disconnect();
+  bot = undefined;
+  bot = getClient()
+}, 1000 * 60 * 60 * 6)
 
-bot.on('disconnect', () => {
-  console.log('disconnect event received');
-
-  setTimeout(() => {
-    bot.connect();
-  }, 5000)
-})
-
-bot.on('ready', () => {
-  console.log('Logged in as %s - %s\n', bot.username, bot.id);
-});
-
-bot.on('message', async (user, userID, channelID, message, event) => {
-  const exp = /^\!sunny (.*)$/
-
-  if(exp.test(message)){
-    const match = exp.exec(message);
-    if(!match) return
-
-    try {
-      const text = match[1];
-      const fileName = await generateImage(text);
-      console.log('file %s generated with text %s', fileName, text)
-
-      bot.uploadFile({
-        file: `${root}/${fileName}`,
-        to: channelID
-      }, () => {
-        child_process.exec(`rm -f ./${fileName}`, (error, stdout, stderr) => {
-          console.log(error ? "file not deleted" : "file deleted");
-        })
-      })
-    } catch (e) {
-      console.log(e)
-      bot.sendMessage({
-        to: channelID,
-        message: "shits fucked"
-      })
-    }
-  }
-});
+setTimeout(() => {
+  console.log(new Date().toISOString(), '- ending script for the day')
+  process.exit();
+}, 1000 * 60 * 60 * 24)
 
 app.get('/', async (req, res) => {
   console.log('visited /')
@@ -114,3 +136,4 @@ const generateImage = (input: string) => {
     }
   });
 }
+
