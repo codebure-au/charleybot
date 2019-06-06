@@ -71,13 +71,6 @@ let bot: Discord.Client | undefined;
 
 bot = getClient();
 
-setInterval(() => {
-  console.log(new Date().toISOString(), '- discarding bot')
-  if(bot) bot.disconnect();
-  bot = undefined;
-  bot = getClient()
-}, 1000 * 60 * 60 * 6)
-
 setTimeout(() => {
   console.log(new Date().toISOString(), '- ending script for the day')
   process.exit();
