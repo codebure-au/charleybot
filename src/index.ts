@@ -1,8 +1,5 @@
-import express from "express";
 import child_process from "child_process"
 import Discord from "discord.io"
-
-const app = express();
 
 const root = '/usr/src/app';
 const bannedWords = [
@@ -56,10 +53,6 @@ const getClient = () => {
         })
       } catch (e) {
         console.log(e)
-        bot.sendMessage({
-          to: channelID,
-          message: "shits fucked"
-        })
       }
     }
   });
@@ -67,29 +60,12 @@ const getClient = () => {
   return bot;
 }
 
-let bot: Discord.Client | undefined;
-
-bot = getClient();
+getClient();
 
 setTimeout(() => {
   console.log(new Date().toISOString(), '- ending script for the day')
   process.exit();
 }, 1000 * 60 * 60 * 24)
-
-app.get('/', async (req, res) => {
-  console.log('visited /')
-
-  try {
-    const fileName = await generateImage('The Gang Generates Text. Way too much fucking text. Like this is going to be really long.')
-    res.sendFile(root + '/' + fileName);
-  } catch (e) {
-    res.json(e);
-  }
-})
-
-app.listen(3000, () => {
-  console.log('listening on port 3000');
-})
 
 const generateImage = (input: string) => {
   return new Promise((resolve, reject) => {
@@ -111,7 +87,7 @@ const generateImage = (input: string) => {
 
       const fileName = new Date().getTime() + ".png";
       const command = `magick -size 1280x720 canvas:black \\
-      -size 1000x -background none -font ./textile.ttf \\
+      -size 1000x -background none -font ./includes/textile.ttf \\
       -fill white -pointsize 60 -gravity center caption:"\\"${text}\\"" \\
       -composite ${fileName}`
 
