@@ -7,10 +7,7 @@ const bannedWords = [
   'at', 'around', 'by', 'after', 'along', 'for', 'from', 'of', 'on', 'to', 'with', 'without'
 ]
 
-const discordOptions = {
-  token: "NTgzNTc2NjExMDc3NzUwODA1.XO-YjQ.uNnl1zEaS5VUFfd-Q6g_NnPkj7c",
-  autorun: true
-}
+import { discordOptions } from "./config";
 
 const getClient = () => {
   const bot = new Discord.Client(discordOptions)
