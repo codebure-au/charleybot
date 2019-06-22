@@ -1,7 +1,7 @@
 version: '3'
 services:
 
-  sunny:
+  charley:
     restart: always
     build: .
     ports:

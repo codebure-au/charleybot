@@ -6,6 +6,7 @@ const bannedWords = [
   'a', 'an', 'the', 'for', 'and', 'nor', 'but', 'or', 'yet', 'so', 
   'at', 'around', 'by', 'after', 'along', 'for', 'from', 'of', 'on', 'to', 'with', 'without'
 ]
+let playingAlt = false;
 
 import { discordOptions } from "./config";
 
@@ -26,6 +27,17 @@ const getClient = () => {
   
   bot.on('ready', () => {
     console.log('Logged in as %s - %s\n', bot.username, bot.id);
+
+    setInterval(() => {
+      playingAlt = !playingAlt;
+      bot.setPresence({
+        game: {
+          name: playingAlt ? `!sunny <message>` : `on ${Object.keys(bot.servers).length} servers`,
+          type: 1
+        },
+        idle_since: new Date().getTime()
+      })
+    }, 1000 * 10)
   });
   
   bot.on('message', async (user, userID, channelID, message, event) => {
