@@ -79,8 +79,7 @@ setTimeout(() => {
 const generateImage = (input: string) => {
   return new Promise((resolve, reject) => {
     try {
-      let text = input.replace('"', '\\"');
-      text = input.replace('$', '\\$');
+      let text = input.replace(/[^a-zA-Z0-9']/, '\\"');
 
       let splitStr = text.split(' ');
       splitStr = splitStr.map((word, index) => {
