@@ -2,7 +2,7 @@ import child_process from "child_process"
 import Discord from "discord.io"
 
 const root = '/usr/src/app';
-const bannedWords = [
+const uncapitalisedWords = [
   'a', 'an', 'the', 'for', 'and', 'nor', 'but', 'or', 'yet', 'so', 
   'at', 'around', 'by', 'after', 'along', 'for', 'from', 'of', 'on', 'to', 'with', 'without'
 ]
@@ -84,8 +84,11 @@ const generateImage = (input: string) => {
       let splitStr = text.split(' ');
       splitStr = splitStr.map((word, index) => {
         const exp = /^.*\.$/
-        if(index > 0 && !exp.test(splitStr[index-1])) {
-          if(bannedWords.includes(word)) return word;
+
+        //always capitalise the first word, or any word after a full stop
+        if(index > 0 && !exp.test(splitStr[index-1])) { //if this word is not the first word, and does not come after a full stop
+          //check if the word should not be capitalised
+          if(uncapitalisedWords.includes(word)) return word; //return uncapitalised word
         }
 
         return word.charAt(0).toUpperCase() + word.substring(1); 
