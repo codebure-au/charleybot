@@ -4,7 +4,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/express": "^4.16.1",
-    "discord.io": "Woor/discord.io#gateway_v6",
+    "discord.io": "indentedspace/discord.io",
     "express": "^4.17.1",
     "typescript": "^3.4.5"
   },

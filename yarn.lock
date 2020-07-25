@@ -135,9 +135,9 @@ destroy@~1.0.4:
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
   integrity sha1-l4hXRCxEdJ5CBmE+N5RiBYJqvYA=
 
-discord.io@Woor/discord.io#gateway_v6:
-  version "2.5.3"
-  resolved "https://codeload.github.com/Woor/discord.io/tar.gz/7312624af8b2d6cb1c8f03055a30d738252912ae"
+discord.io@indentedspace/discord.io:
+  version "2.6.0"
+  resolved "https://codeload.github.com/indentedspace/discord.io/tar.gz/00ed1b2f5452d83651080bf9cda188b62e297d56"
   dependencies:
     cjopus "^0.0.4"
     tweetnacl "^0.14.0"
