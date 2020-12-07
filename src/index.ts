@@ -63,7 +63,7 @@ const getClient = () => {
   });
 
   bot.on("message", async (user, userID, channelID, message, event) => {
-    const exp = /^\!sunny (.*)$/;
+    const exp = new RegExp(`(?:^\\!sunny|<@!?${bot.id}>) (.*)$`);
 
     if (exp.test(message)) {
       const match = exp.exec(message);
@@ -107,7 +107,7 @@ setTimeout(() => {
 const generateImage = (input: string) => {
   return new Promise((resolve, reject) => {
     try {
-      let text = input.replace(/[^a-zA-Z0-9' ]/g, "");
+      let text = input.replace(/[^a-zA-Z0-9' ]/g, "").trim();
 
       let splitStr = text.split(" ");
       splitStr = splitStr.map((word, index) => {
