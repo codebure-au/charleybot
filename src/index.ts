@@ -1,5 +1,5 @@
 import child_process from "child_process";
-import Discord from "discord.io";
+import Discord from "discord.js";
 
 const root = "/usr/src/app";
 const uncapitalisedWords = [
@@ -26,86 +26,9 @@ const uncapitalisedWords = [
   "with",
   "without",
 ];
-let playingAlt = false;
-
-import { discordOptions } from "./config";
-
-const getClient = () => {
-  const bot = new Discord.Client(discordOptions);
-
-  bot.on("connect", () => {
-    console.log(new Date().toISOString(), "- connect event received");
-  });
-
-  bot.on("disconnect", () => {
-    console.log(new Date().toISOString(), "- disconnect event received");
-
-    setTimeout(() => {
-      bot.connect();
-    }, 5000);
-  });
-
-  bot.on("ready", () => {
-    console.log("Logged in as %s - %s\n", bot.username, bot.id);
-
-    setInterval(() => {
-      playingAlt = !playingAlt;
-      bot.setPresence({
-        game: {
-          name: playingAlt
-            ? `!sunny <message>`
-            : `on ${Object.keys(bot.servers).length} servers`,
-          type: 1,
-        },
-        idle_since: new Date().getTime(),
-      });
-    }, 1000 * 10);
-  });
-
-  bot.on("message", async (user, userID, channelID, message, event) => {
-    const exp = new RegExp(`(?:^\\!sunny|<@!?${bot.id}>) (.*)$`);
-
-    if (exp.test(message)) {
-      const match = exp.exec(message);
-      if (!match) return;
-
-      try {
-        const text = match[1];
-        const fileName = await generateImage(text);
-        console.log("file %s generated with text %s", fileName, text);
-
-        bot.uploadFile(
-          {
-            file: `${root}/${fileName}`,
-            to: channelID,
-          },
-          () => {
-            child_process.exec(
-              `rm -f ./${fileName}`,
-              (error, stdout, stderr) => {
-                console.log(error ? "file not deleted" : "file deleted");
-              }
-            );
-          }
-        );
-      } catch (e) {
-        console.log(e);
-      }
-    }
-  });
-
-  return bot;
-};
-
-getClient();
-
-setTimeout(() => {
-  console.log(new Date().toISOString(), "- ending script for the day");
-  process.exit();
-}, 1000 * 60 * 60 * 24);
 
 const generateImage = (input: string) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     try {
       let text = input.replace(/[^a-zA-Z0-9' ]/g, "").trim();
 
@@ -145,3 +68,58 @@ const generateImage = (input: string) => {
     }
   });
 };
+
+let playingAlt = false;
+
+import { token } from "./config.json";
+
+const client = new Discord.Client();
+
+client.on("ready", () => {
+  console.log("client ready");
+});
+
+client.on("message", async ({ content, channel }) => {
+  const exp = new RegExp(`(?:^\\!sunny|<@!?${client.user?.id}>) (.*)$`);
+
+  if (exp.test(content)) {
+    const match = exp.exec(content);
+    if (!match) return;
+
+    try {
+      const text = match[1];
+      const fileName = await generateImage(text);
+      console.log("file %s generated with text %s", fileName, text);
+
+      const attachment = new Discord.MessageAttachment(
+        `${root}/${fileName}`,
+        fileName
+      );
+      await channel.send(attachment);
+      child_process.exec(`rm -f ./${fileName}`, (error) => {
+        console.log(error ? "file not deleted" : "file deleted");
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+});
+
+client.on("error", (error) => {
+  console.log("ERROR", error);
+});
+
+client.setInterval(() => {
+  playingAlt = !playingAlt;
+
+  client.user?.setPresence({
+    activity: {
+      type: "LISTENING",
+      name: playingAlt
+        ? `!sunny <message>`
+        : `on ${Object.keys(client.guilds.cache).length} servers`,
+    },
+  });
+}, 30 * 1000);
+
+client.login(token);

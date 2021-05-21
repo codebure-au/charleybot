@@ -12,8 +12,8 @@ RUN yarn install
 
 COPY . .
 
-RUN yarn prepare
+RUN yarn build
 
 EXPOSE 3000
 
-CMD ["yarn", "start"]
+CMD ["node", "./build/index.js"]
