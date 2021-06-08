@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@types/ws": "^7.4.4",
-    "discord.js": "^12.5.3"
+    "discord.js": "^12.5.3",
+    "ws": "^7.4.6"
   }
 }
