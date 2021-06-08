@@ -51,8 +51,9 @@ const generateImage = (input: string) => {
       const fileName = new Date().getTime() + ".png";
       const command = `magick -size 1280x720 canvas:black \\
       -size 1000x -background none -font ./includes/textile.ttf \\
-      -fill white -pointsize 60 -gravity center caption:"\\"${text}\\"" \\
-      -composite ${fileName}`;
+      -fill white -pointsize 60 -gravity center \\
+      -annotate +0+0 "\\"${text}\\"" \\
+      ${fileName}`;
 
       console.log(command);
       child_process.exec(command, (error) => {
@@ -117,7 +118,7 @@ client.setInterval(() => {
       type: "LISTENING",
       name: playingAlt
         ? `!sunny <message>`
-        : `on ${Object.keys(client.guilds.cache).length} servers`,
+        : `on ${client.guilds.cache.size} servers`,
     },
   });
 }, 30 * 1000);
