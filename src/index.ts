@@ -103,7 +103,7 @@ client.on(Events.MessageCreate, async ({ content, channel }) => {
       const attachment = new Discord.AttachmentBuilder(`${root}/${fileName}`, {
         name: fileName,
       });
-      await channel.send({ files: [attachment], content: "penis" });
+      await channel.send({ files: [attachment] });
       child_process.exec(`rm -f ./${fileName}`, (error) => {
         logWithTime(error ? "file not deleted" : "file deleted");
       });
