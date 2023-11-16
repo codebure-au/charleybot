@@ -3,16 +3,14 @@
   "version": "1.0.3",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^15.3.0",
-    "typescript": "^4.2.4"
+    "@types/node": "^20.9.0",
+    "typescript": "^5.2.2"
   },
   "scripts": {
     "start": "docker-compose build && docker-compose up",
     "build": "yarn tsc"
   },
   "dependencies": {
-    "@types/ws": "^7.4.4",
-    "discord.js": "^12.5.3",
-    "ws": "^7.4.6"
+    "discord.js": "^14.14.1"
   }
 }

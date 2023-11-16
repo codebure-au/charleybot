@@ -1,5 +1,9 @@
-import child_process from "child_process";
-import Discord from "discord.js";
+import child_process from "node:child_process";
+import Discord, { ActivityType, Events, GatewayIntentBits } from "discord.js";
+
+const logWithTime = (...args: any[]) => {
+  console.log(new Date().toISOString(), "-", ...args);
+};
 
 const root = "/usr/src/app";
 const uncapitalisedWords = [
@@ -55,7 +59,6 @@ const generateImage = (input: string) => {
       -annotate +0+0 "\\"${text}\\"" \\
       ${fileName}`;
 
-      console.log(command);
       child_process.exec(command, (error) => {
         if (error) {
           reject(error);
@@ -74,13 +77,19 @@ let playingAlt = false;
 
 import { token } from "./config.json";
 
-const client = new Discord.Client();
-
-client.on("ready", () => {
-  console.log("client ready");
+const client = new Discord.Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
 });
 
-client.on("message", async ({ content, channel }) => {
+client.once(Events.ClientReady, () => {
+  logWithTime("client ready");
+});
+
+client.on(Events.MessageCreate, async ({ content, channel }) => {
   const exp = new RegExp(`(?:^\\!sunny|<@!?${client.user?.id}>) (.*)$`);
 
   if (exp.test(content)) {
@@ -90,37 +99,31 @@ client.on("message", async ({ content, channel }) => {
     try {
       const text = match[1];
       const fileName = await generateImage(text);
-      console.log("file %s generated with text %s", fileName, text);
 
-      const attachment = new Discord.MessageAttachment(
-        `${root}/${fileName}`,
-        fileName
-      );
-      await channel.send(attachment);
-      child_process.exec(`rm -f ./${fileName}`, (error) => {
-        console.log(error ? "file not deleted" : "file deleted");
+      const attachment = new Discord.AttachmentBuilder(`${root}/${fileName}`, {
+        name: fileName,
       });
-    } catch (e) {
-      console.log(e);
+      await channel.send({ files: [attachment], content: "penis" });
+      child_process.exec(`rm -f ./${fileName}`, (error) => {
+        logWithTime(error ? "file not deleted" : "file deleted");
+      });
+    } catch (e: any) {
+      const error: Error = e;
+      console.log(error.message);
     }
   }
 });
 
-client.on("error", (error) => {
-  console.log("ERROR", error);
+client.on(Events.Error, (error) => {
+  logWithTime("ERROR", error);
 });
 
-client.setInterval(() => {
+setInterval(() => {
   playingAlt = !playingAlt;
-
-  client.user?.setPresence({
-    activity: {
-      type: "LISTENING",
-      name: playingAlt
-        ? `!sunny <message>`
-        : `on ${client.guilds.cache.size} servers`,
-    },
-  });
+  client.user?.setActivity(
+    playingAlt ? `!sunny <message>` : `${client.guilds.cache.size} servers`,
+    { type: ActivityType.Listening }
+  );
 }, 30 * 1000);
 
 client.login(token);
